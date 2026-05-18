@@ -4,25 +4,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Sleek Harmony Color Palette */
-  --bg-primary: #0b0c10;
-  --bg-secondary: #13151a;
-  --bg-tertiary: #1a1d24;
-  --accent-glow: rgba(220, 95, 0, 0.15); /* Warm hash brown potato glow */
-  --accent-solid: #dc5f00;
-  --accent-light: #ff7e21;
-  --text-primary: #f3f4f6;
-  --text-muted: #9ca3af;
-  --text-dark: #4b5563;
-  --border-color: rgba(255, 255, 255, 0.06);
-  --border-focus: rgba(220, 95, 0, 0.4);
-  --glass-bg: rgba(19, 21, 26, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.05);
+  /* Sleek Premium Light Mode Color Palette */
+  --bg-primary: #f8fafc; /* Beautiful soft slate gray */
+  --bg-secondary: #ffffff; /* Pure white cards & panes */
+  --bg-tertiary: #f1f5f9; /* Slate 100 for secondary fields/sub-panels */
+  --accent-glow: rgba(220, 95, 0, 0.08); /* Warm hash brown light glow */
+  --accent-solid: #dc5f00; /* Rich orange accent */
+  --accent-light: #ff7e21; /* Vibrant orange hover states */
+  --text-primary: #0f172a; /* Slate 900 for dark crisp text */
+  --text-muted: #475569; /* Slate 600 for subtext */
+  --text-dark: #94a3b8; /* Slate 400 for background hints */
+  --border-color: rgba(15, 23, 42, 0.08); /* Soft slate border */
+  --border-focus: rgba(220, 95, 0, 0.3); /* Active input ring */
+  --glass-bg: rgba(255, 255, 255, 0.85); /* Frosted glass */
+  --glass-border: rgba(15, 23, 42, 0.06); /* Ultra-soft frosting line */
   
-  /* Cyberpunk Indicator Greens and Blues */
-  --cyber-green: #00e676;
-  --cyber-green-glow: rgba(0, 230, 118, 0.2);
-  --cyber-blue: #00b0ff;
+  /* Modern High-Contrast Indicators */
+  --cyber-green: #10b981; /* Premium Emerald green */
+  --cyber-green-glow: rgba(16, 185, 129, 0.15);
+  --cyber-blue: #0284c7; /* Sky blue indicator */
   
   /* Fonts */
   --font-display: 'Outfit', 'Inter', -apple-system, sans-serif;
@@ -75,14 +75,14 @@ body {
 .glow-1 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, var(--accent-glow) 0%, rgba(255,255,255,0) 70%);
   top: -50px;
   right: 10%;
 }
 .glow-2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(0, 176, 255, 0.08) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.05) 0%, rgba(255,255,255,0) 70%);
   bottom: -100px;
   left: 5%;
 }
@@ -248,7 +248,7 @@ body {
 .sidebar-footer {
   padding: 20px 24px;
   border-top: 1px solid var(--border-color);
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: var(--bg-tertiary);
 }
 
 .status-indicator {
@@ -292,7 +292,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: rgba(19, 21, 26, 0.3);
+  background-color: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(10px);
 }
 
@@ -526,7 +526,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 4px 20px 20px 20px;
   padding: 16px 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
 }
 
 /* ==========================================================================
@@ -543,7 +543,7 @@ body {
   background-color: var(--bg-secondary);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   border: 1px solid var(--border-color);
   transition: var(--transition-smooth);
 }
@@ -935,7 +935,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
 }
 
 .indicator-bubble .dot {
@@ -959,7 +959,7 @@ body {
    ========================================================================== */
 .workspace-footer {
   padding: 24px 32px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(248, 250, 252, 0.95) 100%);
   border-top: 1px solid var(--border-color);
   z-index: 10;
   display: flex;
@@ -983,15 +983,15 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
   transition: var(--transition-smooth);
 }
 
 .workspace-input:focus {
   outline: none;
   border-color: var(--accent-solid);
-  box-shadow: 0 0 16px rgba(220, 95, 0, 0.12), 0 4px 20px rgba(0, 0, 0, 0.3);
-  background-color: var(--bg-tertiary);
+  box-shadow: 0 0 16px rgba(220, 95, 0, 0.08), 0 4px 20px rgba(15, 23, 42, 0.08);
+  background-color: var(--bg-secondary);
 }
 
 .workspace-input:disabled {
