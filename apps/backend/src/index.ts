@@ -49,7 +49,7 @@ app.post('/chat', async (req, res) => {
 
     if (geminiKey && (!model || model.includes('gemini') || model.includes('google'))) {
       console.log('Using HashbrownGoogle adapter...');
-      const resolvedModel = model === 'gemini' ? 'gemini-1.5-flash' : (model || 'gemini-1.5-flash');
+      const resolvedModel = model === 'gemini' ? 'gemini-2.5-flash' : (model || 'gemini-2.5-flash');
       const stream = HashbrownGoogle.stream.text({
         apiKey: geminiKey,
         request: {
