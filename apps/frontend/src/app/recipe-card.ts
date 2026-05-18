@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RecipeService } from './recipe.service';
 
 @Component({
   selector: 'app-recipe-card',
@@ -25,7 +26,10 @@ import { CommonModule } from '@angular/common';
           <div class="ingredients-grid">
             @for (ing of ingredients(); track ing) {
               <label class="ingredient-checkbox">
-                <input type="checkbox">
+                <input 
+                  type="checkbox" 
+                  [checked]="recipeService.isIngredientChecked(ing)"
+                  (change)="recipeService.toggleIngredient(ing)">
                 <span class="checkmark"></span>
                 <span class="ing-label">{{ ing }}</span>
               </label>
@@ -37,8 +41,8 @@ import { CommonModule } from '@angular/common';
           <h4 class="body-subtitle">Step-by-Step Directions</h4>
           <ol class="steps-list">
             @for (step of steps(); track step; let idx = $index) {
-              <li class="step-item">
-                <span class="step-num">{{ idx + 1 }}</span>
+              <li class="step-item" [class.completed]="recipeService.isStepCompleted(idx)">
+                <span class="step-num" (click)="recipeService.toggleStep(idx)">{{ idx + 1 }}</span>
                 <p class="step-text">{{ step }}</p>
               </li>
             }
@@ -49,6 +53,8 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class RecipeCardComponent {
+  protected readonly recipeService = inject(RecipeService);
+
   title = input<string>('');
   prepTime = input<string>('');
   cookTime = input<string>('');

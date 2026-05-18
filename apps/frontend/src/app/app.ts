@@ -1,13 +1,14 @@
-import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { uiChatResource, exposeComponent, RenderMessageComponent } from '@hashbrownai/angular';
+import { uiChatResource, exposeComponent, RenderMessageComponent, createTool } from '@hashbrownai/angular';
 import { s } from '@hashbrownai/core';
 
-// Sibling Standalone Components
+// Sibling Standalone Components & Services
 import { MarkdownComponent } from './markdown';
 import { RecipeCardComponent } from './recipe-card';
 import { SystemDashboardComponent } from './system-dashboard';
+import { RecipeService } from './recipe.service';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,9 @@ import { SystemDashboardComponent } from './system-dashboard';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App {
+  // Inject global reactive recipe state
+  protected readonly recipeService = inject(RecipeService);
+
   // Selected LLM Provider setting (specifically set to 'gemini' as required)
   protected readonly selectedModel = signal<'gemini' | 'openai'>('gemini');
 
@@ -34,6 +38,40 @@ export class App {
     { label: '📊 Express Server Dashboard', text: 'Show server status' },
     { label: '💡 What is GenUI?', text: 'Explain what Generative UI is' }
   ];
+
+  // Instantiates client-side agent tools inside the active injection context of the component!
+  private readonly toggleIngredientTool = createTool({
+    name: 'toggleRecipeIngredient',
+    description: 'Mark an ingredient as checked/completed or unchecked in the active recipe card checklist.',
+    schema: s.object('Toggle ingredient input', {
+      ingredientName: s.string('The exact or partial name of the ingredient to toggle'),
+      checked: s.boolean('True to mark it as checked, false to mark it as unchecked')
+    }),
+    handler: (input) => {
+      this.recipeService.toggleIngredient(input.ingredientName, input.checked);
+      return Promise.resolve({ 
+        success: true, 
+        message: `Successfully set ingredient "${input.ingredientName}" checked to ${input.checked}` 
+      });
+    }
+  });
+
+  private readonly setRecipeStepCompletedTool = createTool({
+    name: 'setRecipeStepCompleted',
+    description: 'Mark a specific step of the cooking instructions as completed or pending.',
+    schema: s.object('Set step status input', {
+      stepNumber: s.number('The 1-based step number to update (e.g. 1 for step 1)'),
+      completed: s.boolean('True to mark it completed, false to mark it pending')
+    }),
+    handler: (input) => {
+      const zeroBasedIdx = input.stepNumber - 1;
+      this.recipeService.toggleStep(zeroBasedIdx, input.completed);
+      return Promise.resolve({ 
+        success: true, 
+        message: `Successfully set step ${input.stepNumber} completion status to ${input.completed}` 
+      });
+    }
+  });
 
   // Instantiates the Hashbrown UI chat completion manager with native exposed components
   protected readonly chat = uiChatResource({
@@ -115,6 +153,10 @@ export class App {
           )
         }
       })
+    ],
+    tools: [
+      this.toggleIngredientTool,
+      this.setRecipeStepCompletedTool
     ]
   });
 

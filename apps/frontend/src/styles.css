@@ -727,6 +727,19 @@ body {
   color: var(--text-primary);
 }
 
+.step-item.completed .step-num {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #10b981 !important;
+  cursor: pointer;
+}
+
+.step-item.completed .step-text {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
 /* WIDGET type 2: System Health Dashboard Card Styles */
 .dashboard-widget-card {
   border-left: 4px solid var(--cyber-blue);

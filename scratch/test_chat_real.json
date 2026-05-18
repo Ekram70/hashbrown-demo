@@ -1,0 +1,278 @@
+{
+    "model": "gemini",
+    "system": "\n      ### ROLE & TONE\n      You are **Hashbrown AI**, an advanced generative assistant helping developers build reactive GenUI.\n      Your tone is clear, helpful, respectful, and highly technical yet accessible.\n\n      ### RULES\n      1. Never expose raw code details or internal database keys.\n      2. For commands you cannot perform, admit it and suggest an alternative.\n      3. **Always** wrap ALL general assistant text, explanations, lists, or paragraphs in an <app-markdown data=\"...\" /> tag.\n      4. For actionable user requests:\n         - When asked for a recipe or food directions, **precede** your text explanation with the appropriate recipe card component call:\n           <app-recipe-card title=\"...\" prepTime=\"...\" cookTime=\"...\" servings=\"...\" [ingredients]=\"...\" [steps]=\"...\" />\n         - When asked for backend status, server status, health checks, or metrics dashboard, **precede** your explanation with the appropriate system dashboard component call:\n           <app-system-dashboard serverStatus=\"...\" cpuUsage=\"...\" memoryUsage=\"...\" uptime=\"...\" activeConnections=\"...\" [endpoints]=\"...\" />\n      5. Nest all custom component tags inside a single <ui>...</ui> tag block in your assistant messages.\n\n      ### EXAMPLES\n\n      <user>Hello</user>\n      <assistant>\n        <ui>\n          <app-markdown data=\"Hello! I am Hashbrown AI. How may I assist you with building reactive Generative UI today?\" />\n        </ui>\n      </assistant>\n\n      <user>Give me a hashbrown recipe</user>\n      <assistant>\n        <ui>\n          <app-markdown data=\"Certainly! Here is a premium interactive recipe card to cook perfect, crispy golden-brown hashbrowns:\" />\n          <app-recipe-card \n            title=\"Ultimate Crispy Hashbrowns\" \n            prepTime=\"10 mins\" \n            cookTime=\"15 mins\" \n            [servings]=\"2\"\n            [ingredients]='[\"3 medium Russet potatoes\", \"2 tbsp unsalted butter, melted\", \"1 tbsp vegetable oil\", \"1/2 tsp garlic powder\", \"Salt and black pepper to taste\"]'\n            [steps]='[\"Shred potatoes using a box grater into a bowl of cold water. Rinse until water is clear.\", \"Squeeze out all moisture completely using a clean kitchen towel. This is crucial for crispiness!\", \"In a bowl, toss the shredded potatoes with melted butter, garlic powder, salt, and pepper.\", \"Heat vegetable oil in a large skillet over medium-high heat. Spread potatoes evenly.\", \"Cook for 6-8 minutes until golden brown, then flip and cook the other side for another 5-6 minutes.\", \"Serve piping hot with your favorite toppings!\"]'\n          />\n        </ui>\n      </assistant>\n    ",
+    "messages": [
+        {
+            "role": "user",
+            "content": "Give me a hashbrown recipe"
+        }
+    ],
+    "tools": [
+        {
+            "description": "Mark an ingredient as checked/completed or unchecked in the active recipe card checklist.",
+            "name": "toggleRecipeIngredient",
+            "parameters": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "object",
+                "properties": {
+                    "ingredientName": {
+                        "type": "string",
+                        "description": "The exact or partial name of the ingredient to toggle"
+                    },
+                    "checked": {
+                        "type": "boolean",
+                        "description": "True to mark it as checked, false to mark it as unchecked"
+                    }
+                },
+                "required": [
+                    "ingredientName",
+                    "checked"
+                ],
+                "additionalProperties": false,
+                "description": "Toggle ingredient input"
+            }
+        },
+        {
+            "description": "Mark a specific step of the cooking instructions as completed or pending.",
+            "name": "setRecipeStepCompleted",
+            "parameters": {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "object",
+                "properties": {
+                    "stepNumber": {
+                        "type": "number",
+                        "description": "The 1-based step number to update (e.g. 1 for step 1)"
+                    },
+                    "completed": {
+                        "type": "boolean",
+                        "description": "True to mark it completed, false to mark it pending"
+                    }
+                },
+                "required": [
+                    "stepNumber",
+                    "completed"
+                ],
+                "additionalProperties": false,
+                "description": "Set step status input"
+            }
+        }
+    ],
+    "responseFormat": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "ui": {
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "0"
+                            ],
+                            "properties": {
+                                "0": {
+                                    "type": "object",
+                                    "properties": {
+                                        "$tagName": {
+                                            "type": "string",
+                                            "const": "app-markdown",
+                                            "description": "app-markdown"
+                                        },
+                                        "$props": {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "string",
+                                                    "description": "The markdown text content."
+                                                }
+                                            },
+                                            "required": [
+                                                "data"
+                                            ],
+                                            "additionalProperties": false,
+                                            "description": "Props"
+                                        }
+                                    },
+                                    "required": [
+                                        "$tagName",
+                                        "$props"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "Show descriptive text, paragraphs, lists, and markdown formatting to the user."
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "1"
+                            ],
+                            "properties": {
+                                "1": {
+                                    "type": "object",
+                                    "properties": {
+                                        "$tagName": {
+                                            "type": "string",
+                                            "const": "app-recipe-card",
+                                            "description": "app-recipe-card"
+                                        },
+                                        "$props": {
+                                            "type": "object",
+                                            "properties": {
+                                                "prepTime": {
+                                                    "type": "string",
+                                                    "description": "Preparation time required"
+                                                },
+                                                "cookTime": {
+                                                    "type": "string",
+                                                    "description": "Cooking time required"
+                                                },
+                                                "servings": {
+                                                    "type": "number",
+                                                    "description": "Number of servings"
+                                                },
+                                                "ingredients": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "description": "Ingredient item"
+                                                    },
+                                                    "description": "List of ingredient strings"
+                                                },
+                                                "steps": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "description": "Cooking step"
+                                                    },
+                                                    "description": "Step-by-step cooking directions"
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "description": "The name of the recipe"
+                                                }
+                                            },
+                                            "required": [
+                                                "title",
+                                                "prepTime",
+                                                "cookTime",
+                                                "servings",
+                                                "ingredients",
+                                                "steps"
+                                            ],
+                                            "additionalProperties": false,
+                                            "description": "Props"
+                                        }
+                                    },
+                                    "required": [
+                                        "$tagName",
+                                        "$props"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "Show a highly interactive recipe card with checklist boxes for ingredients and step-by-step directions."
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "2"
+                            ],
+                            "properties": {
+                                "2": {
+                                    "type": "object",
+                                    "properties": {
+                                        "$tagName": {
+                                            "type": "string",
+                                            "const": "app-system-dashboard",
+                                            "description": "app-system-dashboard"
+                                        },
+                                        "$props": {
+                                            "type": "object",
+                                            "properties": {
+                                                "serverStatus": {
+                                                    "type": "string",
+                                                    "description": "Backend service status (e.g. HEALTHY)"
+                                                },
+                                                "cpuUsage": {
+                                                    "type": "number",
+                                                    "description": "CPU allocation percentage"
+                                                },
+                                                "memoryUsage": {
+                                                    "type": "string",
+                                                    "description": "Memory usage string (e.g., 128MB / 512MB)"
+                                                },
+                                                "uptime": {
+                                                    "type": "string",
+                                                    "description": "Active server uptime duration"
+                                                },
+                                                "activeConnections": {
+                                                    "type": "number",
+                                                    "description": "Active ws or http connections"
+                                                },
+                                                "endpoints": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "path": {
+                                                                "type": "string",
+                                                                "description": "Route path"
+                                                            },
+                                                            "method": {
+                                                                "type": "string",
+                                                                "description": "HTTP method (e.g. POST, GET)"
+                                                            },
+                                                            "latency": {
+                                                                "type": "string",
+                                                                "description": "Request response latency"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "path",
+                                                            "method",
+                                                            "latency"
+                                                        ],
+                                                        "additionalProperties": false,
+                                                        "description": "Endpoint metric"
+                                                    },
+                                                    "description": "Monitored route latencies list"
+                                                }
+                                            },
+                                            "required": [
+                                                "serverStatus",
+                                                "cpuUsage",
+                                                "memoryUsage",
+                                                "uptime",
+                                                "activeConnections",
+                                                "endpoints"
+                                            ],
+                                            "additionalProperties": false,
+                                            "description": "Props"
+                                        }
+                                    },
+                                    "required": [
+                                        "$tagName",
+                                        "$props"
+                                    ],
+                                    "additionalProperties": false,
+                                    "description": "Show a real-time system performance and backend service metrics dashboard."
+                                }
+                            }
+                        }
+                    ]
+                },
+                "description": "List of elements"
+            }
+        },
+        "required": [
+            "ui"
+        ],
+        "additionalProperties": false,
+        "description": "UI"
+    }
+}
