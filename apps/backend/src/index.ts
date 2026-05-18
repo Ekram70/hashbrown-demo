@@ -56,6 +56,18 @@ app.post('/chat', async (req, res) => {
           ...req.body,
           model: resolvedModel
         },
+        transformRequestOptions: (params: any) => {
+          // Prevent 400 Bad Request by removing empty tool configurations
+          if (
+            params.config &&
+            params.config.tools &&
+            params.config.tools.length > 0 &&
+            (!params.config.tools[0].functionDeclarations || params.config.tools[0].functionDeclarations.length === 0)
+          ) {
+            delete params.config.tools;
+          }
+          return params;
+        }
       });
       for await (const chunk of stream) {
         res.write(chunk);
