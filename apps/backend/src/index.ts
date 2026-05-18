@@ -121,16 +121,23 @@ app.post('/chat', async (req, res) => {
           transformRequestOptions: (params: any) => {
             console.log('Incoming req.body.tools:', JSON.stringify(req.body.tools, null, 2));
             console.log('Gemini request params config:', JSON.stringify(params.config, null, 2));
-            // Prevent 400 Bad Request by removing empty tools and their toolConfigs
-            if (
-              params.config &&
-              params.config.tools &&
-              params.config.tools.length > 0 &&
-              (!params.config.tools[0].functionDeclarations || params.config.tools[0].functionDeclarations.length === 0)
-            ) {
-              console.log('🤖 Pruning empty tools and toolConfig configurations to avoid 400 Bad Request...');
-              delete params.config.tools;
-              delete params.config.toolConfig;
+            
+            if (params.config) {
+              // Gemini strictly prohibits having both tools and responseMimeType: 'application/json' active simultaneously.
+              // Since responseFormat/JSON schema is required for GenUI rendering, we must prune tools when application/json is active.
+              if (params.config.responseMimeType === 'application/json') {
+                console.log('🤖 Pruning tools and toolConfig because responseMimeType is application/json (Gemini constraint)...');
+                delete params.config.tools;
+                delete params.config.toolConfig;
+              } else if (
+                params.config.tools &&
+                params.config.tools.length > 0 &&
+                (!params.config.tools[0].functionDeclarations || params.config.tools[0].functionDeclarations.length === 0)
+              ) {
+                console.log('🤖 Pruning empty tools and toolConfig configurations to avoid 400 Bad Request...');
+                delete params.config.tools;
+                delete params.config.toolConfig;
+              }
             }
             return params;
           }
