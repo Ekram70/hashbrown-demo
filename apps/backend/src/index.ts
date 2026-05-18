@@ -2,10 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { HashbrownOpenAI } from '@hashbrownai/openai';
 import { HashbrownGoogle } from '@hashbrownai/google';
 
+// Resolve CWD and absolute paths for ESM compatibility
 dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 
 const app = express();
 
@@ -123,7 +130,8 @@ How can I help you build your next generative web application today?`;
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  const isSimulated = !process.env.GEMINI_API_KEY && !process.env.OPENAI_API_KEY;
   console.log(`\n🚀 Hashbrown Express Backend listening on http://localhost:${PORT}`);
   console.log(`💻 Run health check at http://localhost:${PORT}/health`);
-  console.log(`🤖 Simulation mode is ACTIVE by default (set keys in .env to connect live LLMs)\n`);
+  console.log(`🤖 LLM Connection: ${isSimulated ? 'Simulation Mode (Offline Fallback)' : 'Active (Live LLM Connected)'}\n`);
 });
