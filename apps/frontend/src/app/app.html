@@ -95,7 +95,7 @@
 
     <!-- Message Arena -->
     <div class="message-arena">
-      @if (parsedMessages().length === 0) {
+      @if ((chat.value() || []).length === 0) {
         <!-- Onboarding Screen / Suggestion Welcome -->
         <div class="onboarding-container">
           <div class="welcome-badge">WELCOME TO HASHBROWN</div>
@@ -117,139 +117,30 @@
       } @else {
         <!-- Active Chat Dialog Feed -->
         <div class="chat-feed">
-          @for (msg of parsedMessages(); track msg.textContent) {
+          @for (msg of chat.value() || []; track msg) {
             <div class="message-row" [class.user-row]="msg.role === 'user'">
               <!-- User Message Design -->
               @if (msg.role === 'user') {
                 <div class="user-bubble">
-                  <p class="msg-text">{{ msg.textContent }}</p>
+                  <p class="msg-text">{{ msg.content }}</p>
                 </div>
-              } @else {
+              } @else if (msg.role === 'assistant') {
                 <!-- Assistant Message Design -->
                 <div class="assistant-wrapper">
                   <div class="assistant-avatar">HB</div>
                   <div class="assistant-content">
-                    @if (msg.textContent) {
-                      <div class="assistant-bubble">
-                        <p class="msg-text" style="white-space: pre-wrap;">{{ msg.textContent }}</p>
-                      </div>
-                    }
-
-                    <!-- Specialized GenUI Widgets Container -->
-                    @if (msg.widgets.length > 0) {
-                      <div class="widgets-container">
-                        @for (widget of msg.widgets; track widget.type) {
-                          
-                          <!-- WIDGET 1: Crispy Recipe Card -->
-                          @if (widget.type === 'RECIPE_CARD') {
-                            <div class="widget-card recipe-widget-card">
-                              <div class="widget-header">
-                                <div class="widget-badge">🍽️ INTERACTIVE RECIPE</div>
-                                <h3 class="widget-title">{{ widget.data.title }}</h3>
-                                <div class="widget-meta">
-                                  <span>Prep: <strong>{{ widget.data.prepTime }}</strong></span>
-                                  <span class="meta-dot">•</span>
-                                  <span>Cook: <strong>{{ widget.data.cookTime }}</strong></span>
-                                  <span class="meta-dot">•</span>
-                                  <span>Servings: <strong>{{ widget.data.servings }}</strong></span>
-                                </div>
-                              </div>
-
-                              <div class="widget-body">
-                                <div class="ingredients-section">
-                                  <h4 class="body-subtitle">Ingredients Checklist</h4>
-                                  <div class="ingredients-grid">
-                                    @for (ing of widget.data.ingredients; track ing) {
-                                      <label class="ingredient-checkbox">
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                        <span class="ing-label">{{ ing }}</span>
-                                      </label>
-                                    }
-                                  </div>
-                                </div>
-
-                                <div class="steps-section">
-                                  <h4 class="body-subtitle">Step-by-Step Directions</h4>
-                                  <ol class="steps-list">
-                                    @for (step of widget.data.steps; track step; let idx = $index) {
-                                      <li class="step-item">
-                                        <span class="step-num">{{ idx + 1 }}</span>
-                                        <p class="step-text">{{ step }}</p>
-                                      </li>
-                                    }
-                                  </ol>
-                                </div>
-                              </div>
-                            </div>
-                          }
-
-                          <!-- WIDGET 2: System Health Monitor Dashboard -->
-                          @if (widget.type === 'SYSTEM_DASHBOARD') {
-                            <div class="widget-card dashboard-widget-card">
-                              <div class="widget-header">
-                                <div class="widget-badge">📊 BACKEND HEALTH REPORT</div>
-                                <div class="dashboard-header-row">
-                                  <h3 class="widget-title">Express Status</h3>
-                                  <span class="badge-status-pulse">
-                                    <span class="status-pulse-dot"></span>
-                                    {{ widget.data.serverStatus }}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div class="widget-body">
-                                <!-- Metrics Grid -->
-                                <div class="metrics-row">
-                                  <div class="metric-box">
-                                    <span class="metric-label">UPTIME</span>
-                                    <span class="metric-value">{{ widget.data.uptime }}</span>
-                                  </div>
-                                  <div class="metric-box">
-                                    <span class="metric-label">ACTIVE CLIENTS</span>
-                                    <span class="metric-value">{{ widget.data.activeConnections }}</span>
-                                  </div>
-                                  <div class="metric-box">
-                                    <span class="metric-label">MEM FOOTPRINT</span>
-                                    <span class="metric-value">{{ widget.data.memoryUsage }}</span>
-                                  </div>
-                                </div>
-
-                                <!-- CPU Progress Meter -->
-                                <div class="progress-meter-container">
-                                  <div class="meter-labels">
-                                    <span class="meter-name">CPU Allocation</span>
-                                    <span class="meter-val">{{ widget.data.cpuUsage }}%</span>
-                                  </div>
-                                  <div class="meter-track">
-                                    <div class="meter-fill" [style.width.%]="widget.data.cpuUsage"></div>
-                                  </div>
-                                </div>
-
-                                <!-- Endpoint Latencies -->
-                                <div class="endpoints-section">
-                                  <h4 class="body-subtitle">Monitored Service Latencies</h4>
-                                  <div class="endpoints-list">
-                                    @for (endpoint of widget.data.endpoints; track endpoint.path) {
-                                      <div class="endpoint-item">
-                                        <div class="endpoint-meta">
-                                          <span class="method-badge" [class.badge-post]="endpoint.method === 'POST'">
-                                            {{ endpoint.method }}
-                                          </span>
-                                          <code class="endpoint-path">{{ endpoint.path }}</code>
-                                        </div>
-                                        <span class="latency-label">{{ endpoint.latency }}</span>
-                                      </div>
-                                    }
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          }
-
-                        }
-                      </div>
-                    }
+                    <!-- Native Hashbrown Generative UI Message Renderer! -->
+                    <hb-render-message [message]="msg" />
+                  </div>
+                </div>
+              } @else if (msg.role === 'error') {
+                <!-- Error Message Design -->
+                <div class="assistant-wrapper error-wrapper">
+                  <div class="assistant-avatar error-avatar">⚠️</div>
+                  <div class="assistant-content">
+                    <div class="assistant-bubble error-bubble" style="background-color: #fef2f2; border: 1px solid #fca5a5; border-radius: 12px; padding: 16px; margin-top: 8px;">
+                      <p class="msg-text" style="color: #991b1b; font-weight: 500;">{{ msg.content }}</p>
+                    </div>
                   </div>
                 </div>
               }
