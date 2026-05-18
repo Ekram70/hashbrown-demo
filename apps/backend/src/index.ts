@@ -57,14 +57,16 @@ app.post('/chat', async (req, res) => {
           model: resolvedModel
         },
         transformRequestOptions: (params: any) => {
-          // Prevent 400 Bad Request by removing empty tool configurations
+          // Prevent 400 Bad Request by removing empty tools and their toolConfigs
           if (
             params.config &&
             params.config.tools &&
             params.config.tools.length > 0 &&
             (!params.config.tools[0].functionDeclarations || params.config.tools[0].functionDeclarations.length === 0)
           ) {
+            console.log('🤖 Pruning empty tools and toolConfig configurations to avoid 400 Bad Request...');
             delete params.config.tools;
+            delete params.config.toolConfig;
           }
           return params;
         }
