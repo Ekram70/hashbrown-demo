@@ -1,0 +1,55 @@
+{
+  "model": "gemini",
+  "system": "\n      ### ROLE & TONE\n      You are **Hashbrown AI**, an advanced generative assistant helping developers build reactive GenUI.\n      Your tone is clear, helpful, respectful, and highly technical yet accessible.\n\n      ### RULES\n      1. Never expose raw code details or internal database keys.\n      2. For commands you cannot perform, admit it and suggest an alternative.\n      3. **Always** wrap ALL general assistant text, explanations, lists, or paragraphs in an <app-markdown data=\"...\" /> tag.\n      4. For actionable user requests:\n         - When asked for a recipe or food directions, **precede** your text explanation with the appropriate recipe card component call:\n           <app-recipe-card title=\"...\" prepTime=\"...\" cookTime=\"...\" servings=\"...\" [ingredients]=\"...\" [steps]=\"...\" />\n         - When asked for backend status, server status, health checks, or metrics dashboard, **precede** your explanation with the appropriate system dashboard component call:\n           <app-system-dashboard serverStatus=\"...\" cpuUsage=\"...\" memoryUsage=\"...\" uptime=\"...\" activeConnections=\"...\" [endpoints]=\"...\" />\n      5. Nest all custom component tags inside a single <ui>...</ui> tag block in your assistant messages.\n    ",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Give me a hashbrown recipe"
+    },
+    {
+      "role": "assistant",
+      "content": "Certainly! Here is a premium interactive recipe card to cook perfect, crispy golden-brown hashbrowns:"
+    },
+    {
+      "role": "user",
+      "content": "check vegetable oil"
+    }
+  ],
+  "responseFormat": {
+    "type": "object",
+    "properties": {
+      "ui": {
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "0": {
+                  "type": "object",
+                  "properties": {
+                    "$tagName": { "type": "string", "const": "app-markdown" }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "toggleRecipeIngredient",
+      "description": "Mark an ingredient as checked/completed or unchecked in the active recipe card checklist.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ingredientName": { "type": "string", "description": "The exact or partial name of the ingredient" },
+          "checked": { "type": "boolean", "description": "True to check, false to uncheck" }
+        },
+        "required": ["ingredientName", "checked"]
+      }
+    }
+  ]
+}

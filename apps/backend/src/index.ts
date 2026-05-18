@@ -77,7 +77,12 @@ function flattenSchema(schema: any): any {
 app.post('/chat', async (req, res) => {
   try {
     const { model, messages } = req.body;
-    const userMessage = messages && messages.length > 0 ? messages[messages.length - 1].content : '';
+    const rawUserMessage = messages && messages.length > 0 ? messages[messages.length - 1].content : '';
+    const userMessage = typeof rawUserMessage === 'string' 
+      ? rawUserMessage 
+      : (Array.isArray(rawUserMessage) 
+          ? rawUserMessage.map((p: any) => p.text || '').join(' ') 
+          : (rawUserMessage ? JSON.stringify(rawUserMessage) : ''));
     
     console.log(`Received chat request for model: ${model || 'default'}`);
     console.log(`User prompt: "${userMessage}"`);
@@ -100,10 +105,31 @@ app.post('/chat', async (req, res) => {
       const resolvedModel = model === 'gemini' ? 'gemini-2.5-flash' : (model || 'gemini-2.5-flash');
 
       const processedRequest = { ...req.body };
-      if (processedRequest.responseFormat) {
+      
+      const lowerPrompt = userMessage.toLowerCase();
+      const isToolAction = 
+        lowerPrompt.includes('check') || 
+        lowerPrompt.includes('toggle') || 
+        lowerPrompt.includes('mark') || 
+        lowerPrompt.includes('complete') || 
+        lowerPrompt.includes('uncheck') || 
+        lowerPrompt.includes('step') || 
+        lowerPrompt.includes('ingredient');
+
+      const hasToolHistory = messages && Array.isArray(messages) && messages.some((m: any) => 
+        m.role === 'tool' || 
+        m.role === 'function' || 
+        (m.toolCalls && m.toolCalls.length > 0)
+      );
+
+      if ((isToolAction || hasToolHistory) && processedRequest.responseFormat) {
+        console.log('🤖 Tool action or history detected. Pruning responseFormat to enable Gemini tools/function calling...');
+        delete processedRequest.responseFormat;
+      } else if (processedRequest.responseFormat) {
         console.log('🤖 Flattening responseFormat schema to avoid Gemini anyOf 400 Bad Request...');
         processedRequest.responseFormat = flattenSchema(processedRequest.responseFormat);
       }
+
       if (processedRequest.tools && Array.isArray(processedRequest.tools)) {
         processedRequest.tools = processedRequest.tools.map((tool: any) => ({
           ...tool,
