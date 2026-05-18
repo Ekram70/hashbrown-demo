@@ -49,18 +49,26 @@ app.post('/chat', async (req, res) => {
 
     if (geminiKey && (!model || model.includes('gemini') || model.includes('google'))) {
       console.log('Using HashbrownGoogle adapter...');
+      const resolvedModel = model === 'gemini' ? 'gemini-1.5-flash' : (model || 'gemini-1.5-flash');
       const stream = HashbrownGoogle.stream.text({
         apiKey: geminiKey,
-        request: req.body,
+        request: {
+          ...req.body,
+          model: resolvedModel
+        },
       });
       for await (const chunk of stream) {
         res.write(chunk);
       }
     } else if (openAiKey) {
       console.log('Using HashbrownOpenAI adapter...');
+      const resolvedModel = model === 'openai' ? 'gpt-4o-mini' : (model || 'gpt-4o-mini');
       const stream = HashbrownOpenAI.stream.text({
         apiKey: openAiKey,
-        request: req.body,
+        request: {
+          ...req.body,
+          model: resolvedModel
+        },
       });
       for await (const chunk of stream) {
         res.write(chunk);
