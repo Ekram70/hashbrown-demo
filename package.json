@@ -1,0 +1,26 @@
+{
+  "name": "hashbrown-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo containing Hashbrown Generative UI frontend (Angular) and Express backend",
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "dev:frontend": "npm run start --workspace=apps/frontend",
+    "build": "npm run build --workspaces",
+    "build:backend": "npm run build --workspace=apps/backend",
+    "build:frontend": "npm run build --workspace=apps/frontend",
+    "install:all": "npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@openapi-contrib/json-schema-to-openapi-schema": "^4.3.2"
+  }
+}
